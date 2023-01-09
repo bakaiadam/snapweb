@@ -565,12 +565,17 @@ class TimeProvider {
     }
 
     now() {
+    //return window.performance.now();
+//    return this.ctx!.currentTime * 1000;
+    
         if (!this.ctx) {
             return window.performance.now();
         } else {
             // Use the more accurate getOutputTimestamp if available, fallback to ctx.currentTime otherwise.
-            const contextTime = !!this.ctx.getOutputTimestamp ? this.ctx.getOutputTimestamp().contextTime : undefined;
-            return (contextTime !== undefined ? contextTime : this.ctx.currentTime) * 1000;
+    //        contextTime = !!this.ctx.getOutputTimestamp ? this.ctx.getOutputTimestamp().contextTime : undefined;
+  //          contextTime = undefined;
+//            return (contextTime !== undefined ? contextTime : this.ctx.currentTime) * 1000;
+            return ( this.ctx.currentTime) * 1000;
         }
     }
 
@@ -845,7 +850,7 @@ class SnapStream {
             hello.uniqueId = getPersistentValue("uniqueId", uuidv4());
             this.sendMessage(hello);
             this.syncTime();
-            this.syncHandle = window.setInterval(() => this.syncTime(), 1000);
+            this.syncHandle = window.setInterval(() => this.syncTime(), 10);
         }
         this.streamsocket.onerror = (ev) => { console.error('error:', ev); };
         this.streamsocket.onclose = () => {
@@ -893,8 +898,7 @@ class SnapStream {
                     this.gainNode!.gain.value = this.serverSettings!.muted ? 0 : this.serverSettings!.volumePercent / 100;
                     // this.timeProvider = new TimeProvider(this.ctx);
                     this.stream = new AudioStream(this.timeProvider, this.sampleFormat, this.bufferMs);
-                    this.latency = (this.ctx.baseLatency !== undefined ? this.ctx.baseLatency : 0) + (this.ctx.outputLatency !== undefined ? this.ctx.outputLatency : 0)
-                    console.log("Base latency: " + this.ctx.baseLatency + ", output latency: " + this.ctx.outputLatency + ", latency: " + this.latency);
+                    this.latency = (this.ctx.baseLatency !== undefined ? this.ctx.baseLatency : 0);
                     this.play();
                 }
             }
